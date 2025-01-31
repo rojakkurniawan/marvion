@@ -205,10 +205,10 @@ install_speedtest(){
 install_custom_configuration(){
     colorized_echo blue "Memasang konfigurasi custom"
     # Install .env
-    wget -O /opt/marzban/.env "https://raw.githubusercontent.com/$GITHUB_USERNAME/$REPO_NAME/main/env"
+    wget -O /opt/marzban/.env "https://raw.githubusercontent.com/$GITHUB_USERNAME/$REPO_NAME/refs/heads/main/env"
 
     # Install docker-compose.yml
-    wget -O /opt/marzban/docker-compose.yml "https://raw.githubusercontent.com/$GITHUB_USERNAME/$REPO_NAME/main/docker-compose.yml"
+    wget -O /opt/marzban/docker-compose.yml "https://raw.githubusercontent.com/$GITHUB_USERNAME/$REPO_NAME/refs/heads/main/docker-compose.yml"
 
 
     mkdir -p /var/log/nginx
@@ -219,10 +219,10 @@ install_custom_configuration(){
     echo "<pre>Setup by AutoScript Marvion</pre>" > /var/www/html/index.html
 
     # Install nginx.conf
-    wget -O /opt/marzban/nginx.conf "https://raw.githubusercontent.com/$GITHUB_USERNAME/$REPO_NAME/main/nginx.conf"
+    wget -O /opt/marzban/nginx.conf "https://raw.githubusercontent.com/$GITHUB_USERNAME/$REPO_NAME/refs/heads/main/nginx.conf"
 
     # Install xray config
-    wget -O /var/lib/marzban/xray_config.json "https://raw.githubusercontent.com/$GITHUB_USERNAME/$REPO_NAME/main/xray_config.json"
+    wget -O /var/lib/marzban/xray_config.json "https://raw.githubusercontent.com/$GITHUB_USERNAME/$REPO_NAME/refs/heads/main/xray_config.json"
 
     cd /opt/marzban
     docker compose down && docker compose up -d
