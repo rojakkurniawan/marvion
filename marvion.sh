@@ -218,6 +218,8 @@ install_speedtest(){
 setup_domain() {
     colorized_echo blue "Menyiapkan domain"
     check_running_as_root
+    install_package curl
+    install_package dnsutils
 
     current_ip=$(curl -s https://ipinfo.io/ip)
     if [ -z "$current_ip" ]; then
