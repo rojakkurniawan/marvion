@@ -322,7 +322,7 @@ install_custom_configuration(){
     echo "<pre>Setup by AutoScript Marvion</pre>" > /var/www/html/index.html
 
     # Install subscription template
-    sudo wget -N -P /var/lib/marzban/templates/subscription/ https://raw.githubusercontent.com/x0sina/marzban-sub/main/index.html
+    sudo wget -N -P /var/lib/marzban/templates/subscription/ https://raw.githubusercontent.com/$GITHUB_USERNAME/$REPO_NAME/refs/heads/main/index.html
 
     cd /opt/marzban
     docker compose down && docker compose up -d
@@ -382,12 +382,65 @@ get_token(){
   -d "grant_type=password&username=${ADMIN_USERNAME}&password=${ADMIN_PASSWORD}" > /etc/data/token.json
 }
 
+clean_up(){
+    if command -v apt >/dev/null 2>&1; then
+        apt clean
+        apt autoremove -y
+    elif command -v dnf >/dev/null 2>&1; then
+        dnf clean all
+        dnf autoremove -y
+    elif command -v yum >/dev/null 2>&1; then
+        yum clean all
+        yum autoremove -y
+    elif command -v pacman >/dev/null 2>&1; then
+        pacman -Scc --noconfirm
+        pacman -Rns $(pacman -Qtdq) --noconfirm
+    fi
+}
+
+admin_setup(){
+    while true; do
+        read -rp "Masukkan username admin: " ADMIN_USERNAME
+        if [[ -z "$ADMIN_USERNAME" ]]; then
+            colorized_echo red "Username tidak boleh kosong!"
+            continue
+        elif [[ ${#ADMIN_USERNAME} -lt 4 ]]; then
+            colorized_echo red "Username minimal 4 karakter!"
+            continue
+        elif [[ ! "$ADMIN_USERNAME" =~ ^[a-zA-Z0-9_]+$ ]]; then
+            colorized_echo red "Username hanya boleh mengandung huruf, angka dan underscore!"
+            continue
+        fi
+        break
+    done
+
+    while true; do
+        read -rp "Masukkan password admin: " ADMIN_PASSWORD
+        if [[ -z "$ADMIN_PASSWORD" ]]; then
+            colorized_echo red "Password tidak boleh kosong!"
+            continue
+        elif [[ ${#ADMIN_PASSWORD} -lt 8 ]]; then
+            colorized_echo red "Password minimal 8 karakter!"
+            continue
+        elif [[ ! "$ADMIN_PASSWORD" =~ [A-Z] ]]; then
+            colorized_echo red "Password harus mengandung minimal 1 huruf kapital!"
+            continue
+        elif [[ ! "$ADMIN_PASSWORD" =~ [a-z] ]]; then
+            colorized_echo red "Password harus mengandung minimal 1 huruf kecil!"
+            continue
+        elif [[ ! "$ADMIN_PASSWORD" =~ [0-9] ]]; then
+            colorized_echo red "Password harus mengandung minimal 1 angka!"
+            continue
+        fi
+        break
+    done
+}
+
 main() {
     colorized_echo cyan "Memulai proses instalasi..."
 
     check_running_as_root
-    read -rp "Masukkan username admin: " ADMIN_USERNAME
-    read -rp "Masukkan password admin: " ADMIN_PASSWORD
+    admin_setup
     setup_domain
     install_necessary_tools
     timedatectl set-timezone Asia/Jakarta;
@@ -408,19 +461,7 @@ main() {
     profile
     
     clear
-    if command -v apt >/dev/null 2>&1; then
-        apt clean
-        apt autoremove -y
-    elif command -v dnf >/dev/null 2>&1; then
-        dnf clean all
-        dnf autoremove -y
-    elif command -v yum >/dev/null 2>&1; then
-        yum clean all
-        yum autoremove -y
-    elif command -v pacman >/dev/null 2>&1; then
-        pacman -Scc --noconfirm
-        pacman -Rns $(pacman -Qtdq) --noconfirm
-    fi
+    clean_up
 
     touch /root/log-install.txt
 
@@ -435,14 +476,9 @@ main() {
     colorized_echo yellow "Silakan gunakan perintah 'marzban' untuk mengelola layanan"
     rm /root/marvion.sh
 
-    read -rp $'\e[1;31m[WARNING]\e[0m Apakah Ingin Reboot [Default y] (y/n)? ' answer
-    answer=${answer:-y}
-
-    if [[ "$answer" == "${answer#[Yy]}" ]]; then
-        exit 0
-    else
-        cat /dev/null > ~/.bash_history && history -c && sudo reboot
-    fi
+    echo -e "\e[1;31m[WARNING]\e[0m Sistem akan reboot dalam 30 detik..."
+    sleep 30
+    cat /dev/null > ~/.bash_history && history -c && sudo reboot
 }
 
 # Jalankan fungsi main
