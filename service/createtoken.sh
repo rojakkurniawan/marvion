@@ -27,14 +27,14 @@ get_token() {
     read -rsp "Masukkan password: " ADMIN_PASSWORD
     echo ""
 
-    if grep -q "# JWT_ACCESS_TOKEN_EXPIRE_MINUTES = 1440" /var/lib/marzban/.env; then
-        sed -i 's/# JWT_ACCESS_TOKEN_EXPIRE_MINUTES = 1440/JWT_ACCESS_TOKEN_EXPIRE_MINUTES = 0/g' /var/lib/marzban/.env
-    elif grep -q "# JWT_ACCESS_TOKEN_EXPIRE_MINUTES = 0" /var/lib/marzban/.env; then
-        sed -i 's/# JWT_ACCESS_TOKEN_EXPIRE_MINUTES = 0/JWT_ACCESS_TOKEN_EXPIRE_MINUTES = 0/g' /var/lib/marzban/.env
-    elif grep -q "JWT_ACCESS_TOKEN_EXPIRE_MINUTES = 1440" /var/lib/marzban/.env; then
-        sed -i 's/JWT_ACCESS_TOKEN_EXPIRE_MINUTES = 1440/JWT_ACCESS_TOKEN_EXPIRE_MINUTES = 0/g' /var/lib/marzban/.env
+    if grep -q "# JWT_ACCESS_TOKEN_EXPIRE_MINUTES = 1440" /opt/marzban/.env; then
+        sed -i 's/# JWT_ACCESS_TOKEN_EXPIRE_MINUTES = 1440/JWT_ACCESS_TOKEN_EXPIRE_MINUTES = 0/g' /opt/marzban/.env
+    elif grep -q "# JWT_ACCESS_TOKEN_EXPIRE_MINUTES = 0" /opt/marzban/.env; then
+        sed -i 's/# JWT_ACCESS_TOKEN_EXPIRE_MINUTES = 0/JWT_ACCESS_TOKEN_EXPIRE_MINUTES = 0/g' /opt/marzban/.env
+    elif grep -q "JWT_ACCESS_TOKEN_EXPIRE_MINUTES = 1440" /opt/marzban/.env; then
+        sed -i 's/JWT_ACCESS_TOKEN_EXPIRE_MINUTES = 1440/JWT_ACCESS_TOKEN_EXPIRE_MINUTES = 0/g' /opt/marzban/.env
     else
-        sed -i 's/JWT_ACCESS_TOKEN_EXPIRE_MINUTES = 0/JWT_ACCESS_TOKEN_EXPIRE_MINUTES = 0/g' /var/lib/marzban/.env
+        sed -i 's/JWT_ACCESS_TOKEN_EXPIRE_MINUTES = 0/JWT_ACCESS_TOKEN_EXPIRE_MINUTES = 0/g' /opt/marzban/.env
     fi
     
     cd /opt/marzban
@@ -54,14 +54,14 @@ get_token() {
     else
         echo "$response" > /etc/data/token.json
         
-        if grep -q "# JWT_ACCESS_TOKEN_EXPIRE_MINUTES = 1440" /var/lib/marzban/.env; then
-            sed -i 's/JWT_ACCESS_TOKEN_EXPIRE_MINUTES = 0/# JWT_ACCESS_TOKEN_EXPIRE_MINUTES = 1440/g' /var/lib/marzban/.env
-        elif grep -q "# JWT_ACCESS_TOKEN_EXPIRE_MINUTES = 0" /var/lib/marzban/.env; then
-            sed -i 's/JWT_ACCESS_TOKEN_EXPIRE_MINUTES = 0/# JWT_ACCESS_TOKEN_EXPIRE_MINUTES = 1440/g' /var/lib/marzban/.env
-        elif grep -q "JWT_ACCESS_TOKEN_EXPIRE_MINUTES = 1440" /var/lib/marzban/.env; then
-            sed -i 's/JWT_ACCESS_TOKEN_EXPIRE_MINUTES = 0/# JWT_ACCESS_TOKEN_EXPIRE_MINUTES = 1440/g' /var/lib/marzban/.env
+        if grep -q "# JWT_ACCESS_TOKEN_EXPIRE_MINUTES = 1440" /opt/marzban/.env; then
+            sed -i 's/JWT_ACCESS_TOKEN_EXPIRE_MINUTES = 0/# JWT_ACCESS_TOKEN_EXPIRE_MINUTES = 1440/g' /opt/marzban/.env
+        elif grep -q "# JWT_ACCESS_TOKEN_EXPIRE_MINUTES = 0" /opt/marzban/.env; then
+            sed -i 's/JWT_ACCESS_TOKEN_EXPIRE_MINUTES = 0/# JWT_ACCESS_TOKEN_EXPIRE_MINUTES = 1440/g' /opt/marzban/.env
+        elif grep -q "JWT_ACCESS_TOKEN_EXPIRE_MINUTES = 1440" /opt/marzban/.env; then
+            sed -i 's/JWT_ACCESS_TOKEN_EXPIRE_MINUTES = 0/# JWT_ACCESS_TOKEN_EXPIRE_MINUTES = 1440/g' /opt/marzban/.env
         else
-            sed -i 's/JWT_ACCESS_TOKEN_EXPIRE_MINUTES = 0/# JWT_ACCESS_TOKEN_EXPIRE_MINUTES = 1440/g' /var/lib/marzban/.env
+            sed -i 's/JWT_ACCESS_TOKEN_EXPIRE_MINUTES = 0/# JWT_ACCESS_TOKEN_EXPIRE_MINUTES = 1440/g' /opt/marzban/.env
         fi
 
         cd /opt/marzban

@@ -319,13 +319,13 @@ install_custom_configuration(){
     # Install subscription template
     sudo wget -N -P /var/lib/marzban/templates/subscription/ https://raw.githubusercontent.com/$GITHUB_USERNAME/$REPO_NAME/refs/heads/main/index.html
 
-    sed -i 's/# JWT_ACCESS_TOKEN_EXPIRE_MINUTES = 1440/JWT_ACCESS_TOKEN_EXPIRE_MINUTES = 0/g' /var/lib/marzban/.env
+    sed -i 's/# JWT_ACCESS_TOKEN_EXPIRE_MINUTES = 1440/JWT_ACCESS_TOKEN_EXPIRE_MINUTES = 0/g' /opt/marzban/.env
     cd /opt/marzban
     docker compose down && docker compose up -d
     sleep 15s
     get_token
 
-    sed -i 's/JWT_ACCESS_TOKEN_EXPIRE_MINUTES = 0/# JWT_ACCESS_TOKEN_EXPIRE_MINUTES = 1440/g' /var/lib/marzban/.env
+    sed -i 's/JWT_ACCESS_TOKEN_EXPIRE_MINUTES = 0/# JWT_ACCESS_TOKEN_EXPIRE_MINUTES = 1440/g' /opt/marzban/.env
     cd /opt/marzban
     docker compose down && docker compose up -d
     sleep 15s
