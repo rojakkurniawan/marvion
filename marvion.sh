@@ -398,7 +398,12 @@ clean_up(){
     fi
 }
 
-admin_setup(){
+
+main() {
+    colorized_echo cyan "Memulai proses instalasi..."
+
+    check_running_as_root
+    
     while true; do
         read -rp "Masukkan username admin: " ADMIN_USERNAME
         if [[ -z "$ADMIN_USERNAME" ]]; then
@@ -434,13 +439,7 @@ admin_setup(){
         fi
         break
     done
-}
 
-main() {
-    colorized_echo cyan "Memulai proses instalasi..."
-
-    check_running_as_root
-    admin_setup
     setup_domain
     install_necessary_tools
     timedatectl set-timezone Asia/Jakarta;
