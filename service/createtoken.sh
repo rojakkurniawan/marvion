@@ -66,6 +66,8 @@ get_token() {
 
         cd /opt/marzban
         docker compose down && docker compose up -d
+        profile
+        echo ""
         colorized_echo green "Token berhasil disimpan di /etc/data/token.json"
     fi
 }

@@ -39,8 +39,7 @@ update_geo() {
     fi
     
     colorized_echo blue "Versi terbaru yang tersedia: ${latest}"
-    colorized_echo yellow "Apakah Anda ingin melanjutkan update GeoIP dan GeoSite? (y/n)"
-    read -r answer
+    read -rp "Apakah Anda ingin melanjutkan update GeoIP dan GeoSite? (y/n): " answer
     
     if [[ "$answer" =~ ^[Yy]$ ]]; then
         colorized_echo blue "Memulai proses update..."
@@ -61,6 +60,8 @@ update_geo() {
             colorized_echo red "Gagal mengupdate GeoSite"
         fi
         
+        profile
+        echo ""
         colorized_echo green "Proses update selesai!"
     else
         colorized_echo yellow "Update dibatalkan."

@@ -245,7 +245,7 @@ setup_domain() {
     install_package dnsutils
 
     clear
-    colorized_echo blue "Menyiapkan domain"
+    colorized_echo blue "Silahkan masukkan domain panel"
     current_ip=$(curl -s https://ipinfo.io/ip)
     if [ -z "$current_ip" ]; then
         colorized_echo red "Tidak dapat menemukan IP publik saat ini."
@@ -354,6 +354,9 @@ install_service(){
     wget -O /usr/bin/menu "https://raw.githubusercontent.com/$GITHUB_USERNAME/$REPO_NAME/refs/heads/main/service/menu.sh"
     chmod +x /usr/bin/menu
 
+    wget -O /usr/bin/createtoken "https://raw.githubusercontent.com/$GITHUB_USERNAME/$REPO_NAME/refs/heads/main/service/createtoken.sh"
+    chmod +x /usr/bin/createtoken
+
     colorized_echo green "Layanan berhasil dipasang"
 }
 
@@ -403,6 +406,8 @@ clean_up(){
 
 admin_setup(){
     clear
+    colorized_echo yellow "Silakan buat akun admin untuk panel Marzban"
+    echo ""
     while true; do
         read -rp "Masukkan username admin: " ADMIN_USERNAME
         if [[ -z "$ADMIN_USERNAME" ]]; then

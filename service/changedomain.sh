@@ -93,10 +93,10 @@ change_domain() {
     # Restart layanan
     cd /opt/marzban
     docker compose up -d
-    
+
     sleep 3
     profile
-
+    echo ""
     colorized_echo green "Domain berhasil diubah ke $new_domain"
     colorized_echo yellow "Silakan tunggu beberapa menit agar perubahan tersimpan sepenuhnya"
 }

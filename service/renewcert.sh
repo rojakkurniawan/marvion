@@ -63,8 +63,6 @@ setup_domain() {
 }
 
 renew_cert() {
-    colorized_echo blue "Memperbarui sertifikat SSL"
-    
     # Pastikan berjalan sebagai root
     check_running_as_root
     
@@ -90,7 +88,7 @@ renew_cert() {
 
     sleep 3
     profile
-
+    echo ""
     colorized_echo green "Sertifikat berhasil diperbarui untuk domain: $domain"
 }
 
