@@ -103,12 +103,10 @@ install_necessary_tools() {
     install_package curl
     install_package net-tools
     install_package unzip
-    install_package sqlite3
     install_package python3-bcrypt
     
     # install socat for ssl
     install_package iptables
-    install_package curl
     install_package socat 
     install_package xz-utils
     install_package wget
@@ -118,7 +116,6 @@ install_necessary_tools() {
     install_package gnupg1
     install_package dnsutils
     install_package lsb-release
-    install_package socat
     install_package cron
     install_package bash-completion
 }
@@ -322,8 +319,16 @@ install_custom_configuration(){
     # Install subscription template
     sudo wget -N -P /var/lib/marzban/templates/subscription/ https://raw.githubusercontent.com/$GITHUB_USERNAME/$REPO_NAME/refs/heads/main/index.html
 
+    sed -i 's/# JWT_ACCESS_TOKEN_EXPIRE_MINUTES = 1440/JWT_ACCESS_TOKEN_EXPIRE_MINUTES = 0/g' /var/lib/marzban/.env
     cd /opt/marzban
     docker compose down && docker compose up -d
+    sleep 15s
+    get_token
+
+    sed -i 's/JWT_ACCESS_TOKEN_EXPIRE_MINUTES = 0/# JWT_ACCESS_TOKEN_EXPIRE_MINUTES = 1440/g' /var/lib/marzban/.env
+    cd /opt/marzban
+    docker compose down && docker compose up -d
+    sleep 15s
     colorized_echo green "Konfigurasi custom berhasil dipasang"
 }
 
@@ -397,6 +402,7 @@ clean_up(){
 }
 
 admin_setup(){
+    clear
     while true; do
         read -rp "Masukkan username admin: " ADMIN_USERNAME
         if [[ -z "$ADMIN_USERNAME" ]]; then
@@ -437,16 +443,21 @@ admin_setup(){
 configure_dns() {
     colorized_echo blue "Mengkonfigurasi DNS resolver"
     
-    # Backup resolv.conf yang lama
+    # Backup resolv.conf yang lama jika ada
     if [ -f /etc/resolv.conf ]; then
         cp /etc/resolv.conf /etc/resolv.conf.backup
+    fi
+
+    # Hapus resolv.conf yang lama
+    if [ -f /etc/resolv.conf ]; then
+        rm -f /etc/resolv.conf
     fi
     
     # Tulis konfigurasi DNS baru
     cat > /etc/resolv.conf << EOF
-nameserver 8.8.8.8
-nameserver 8.8.4.4
 nameserver 1.1.1.1
+nameserver 1.0.0.1
+nameserver 8.8.8.8
 EOF
     
     # Pastikan file tidak bisa diubah
@@ -468,6 +479,7 @@ main() {
     check_running_as_root
     admin_setup
     setup_domain
+    configure_dns
     install_necessary_tools
     timedatectl set-timezone Asia/Jakarta;
     install_speedtest
@@ -475,7 +487,6 @@ main() {
     enable_firewall
     install_marzban_script
     install_cert
-    configure_dns
     install_bbr
     install_warp
     install_xray
@@ -483,9 +494,7 @@ main() {
     add_admin
     install_service
     install_custom_configuration
-    sleep 15s
-    get_token
-    
+
     clear
     clean_up
 
@@ -498,6 +507,7 @@ main() {
     echo "Password  : ${ADMIN_PASSWORD}" | tee -a /root/log-install.txt
     echo "===================================" | tee -a /root/log-install.txt
 
+    echo ""
     colorized_echo green "Instalasi selesai!"
     colorized_echo yellow "Silakan gunakan perintah 'marzban' untuk mengelola layanan"
     rm /root/marvion.sh
