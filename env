@@ -17,8 +17,8 @@ UVICORN_PORT = 8000
 XRAY_JSON = "/var/lib/marzban/xray_config.json"
 # XRAY_SUBSCRIPTION_URL_PREFIX = "https://example.com"
 # XRAY_SUBSCRIPTION_PATH = "sub"
-# XRAY_EXECUTABLE_PATH = "/usr/local/bin/xray"
-# XRAY_ASSETS_PATH = "/usr/local/share/xray"
+XRAY_EXECUTABLE_PATH = "/var/lib/marzban/core/xray"
+XRAY_ASSETS_PATH = "/var/lib/marzban/assets"
 # XRAY_EXCLUDE_INBOUND_TAGS = "INBOUND_X INBOUND_Y"
 # XRAY_FALLBACKS_INBOUND_TAG = "INBOUND_X"
 
@@ -31,9 +31,9 @@ XRAY_JSON = "/var/lib/marzban/xray_config.json"
 
 # DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/xxxxxxx"
 
-# CUSTOM_TEMPLATES_DIRECTORY="/var/lib/marzban/templates/"
+CUSTOM_TEMPLATES_DIRECTORY="/var/lib/marzban/templates/"
 # CLASH_SUBSCRIPTION_TEMPLATE="clash/my-custom-template.yml"
-# SUBSCRIPTION_PAGE_TEMPLATE="subscription/index.html"
+SUBSCRIPTION_PAGE_TEMPLATE="subscription/index.html"
 # HOME_PAGE_TEMPLATE="home/index.html"
 
 # V2RAY_SUBSCRIPTION_TEMPLATE="v2ray/default.json"

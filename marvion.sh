@@ -29,13 +29,13 @@ colorized_echo() {
 
 check_running_as_root() {
     if [ "$(id -u)" != "0" ]; then
-        colorized_echo red "This command must be run as root."
+        colorized_echo red "Perintah ini harus dijalankan sebagai root."
         exit 1
     fi
 }
 
 detect_os() {
-    # Detect the operating system
+    # Mendeteksi sistem operasi
     if [ -f /etc/lsb-release ]; then
         OS=$(lsb_release -si)
     elif [ -f /etc/os-release ]; then
@@ -45,13 +45,13 @@ detect_os() {
     elif [ -f /etc/arch-release ]; then
         OS="Arch"
     else
-        colorized_echo red "Unsupported operating system"
+        colorized_echo red "Sistem operasi tidak didukung"
         exit 1
     fi
 }
 
 detect_and_update_package_manager() {
-    colorized_echo blue "Updating package manager"
+    colorized_echo blue "Memperbarui package manager"
     if [[ "$OS" == "Ubuntu"* ]] || [[ "$OS" == "Debian"* ]]; then
         PKG_MANAGER="apt-get"
         $PKG_MANAGER update
@@ -69,7 +69,7 @@ detect_and_update_package_manager() {
         PKG_MANAGER="zypper"
         $PKG_MANAGER refresh
     else
-        colorized_echo red "Unsupported operating system"
+        colorized_echo red "Sistem operasi tidak didukung"
         exit 1
     fi
 }
@@ -90,19 +90,19 @@ install_package () {
     elif [ "$OS" == "Arch" ]; then
         $PKG_MANAGER -S --noconfirm "$PACKAGE"
     else
-        colorized_echo red "Unsupported operating system"
+        colorized_echo red "Sistem operasi tidak didukung"
         exit 1
     fi
 }
 
-
-install_tools() {
+install_necessary_tools() {
     detect_os
     install_package neofetch
     install_package ufw
     install_package sqlite3
     install_package curl
     install_package net-tools
+    install_package unzip
 
     # install socat for ssl
     install_package iptables
@@ -119,10 +119,7 @@ install_tools() {
     install_package socat
     install_package cron
     install_package bash-completion
-
-    
 }
-
 
 install_marzban_script() {
     colorized_echo blue "Memasang skrip marzban"
@@ -160,7 +157,6 @@ net.ipv6.conf.lo.disable_ipv6 = 1' >> /etc/sysctl.conf
     colorized_echo green "BBR berhasil dipasang"
 }
 
-
 install_warp(){
     colorized_echo blue "Memasang WARP"
     wget -O /root/warp "https://raw.githubusercontent.com/hamid-gh98/x-ui-scripts/main/install_warp_proxy.sh"
@@ -169,8 +165,26 @@ install_warp(){
     colorized_echo green "WARP berhasil dipasang"
 }
 
-enable_ufw(){
-    colorized_echo blue "Mengaktifkan UFW"
+install_vnstat(){
+    colorized_echo blue "Memasang vnstat"
+    install_package vnstat
+    /etc/init.d/vnstat restart
+    install_package libsqlite3-dev
+    wget https://github.com/$GITHUB_USERNAME/$REPO_NAME/refs/heads/main/vnstat-2.6.tar.gz
+    tar zxvf vnstat-2.6.tar.gz
+    cd vnstat-2.6
+    ./configure --prefix=/usr --sysconfdir=/etc && make && make install 
+    cd
+    chown vnstat:vnstat /var/lib/vnstat -R
+    systemctl enable vnstat
+    /etc/init.d/vnstat restart
+    rm -f /root/vnstat-2.6.tar.gz 
+    rm -rf /root/vnstat-2.6
+    colorized_echo green "vnstat berhasil dipasang"
+}
+
+enable_firewall(){
+    colorized_echo blue "Mengaktifkan firewall"
     sudo ufw default deny incoming
     sudo ufw default allow outgoing
     sudo ufw allow ssh
@@ -179,7 +193,7 @@ enable_ufw(){
     sudo ufw allow 4001/tcp
     sudo ufw allow 4001/udp
     yes | sudo ufw enable
-    colorized_echo green "UFW berhasil diaktifkan"
+    colorized_echo green "Firewall berhasil diaktifkan"
 }
 
 install_speedtest(){
@@ -199,34 +213,6 @@ install_speedtest(){
     fi
     
     colorized_echo green "Speedtest berhasil dipasang"
-}
-
-
-install_custom_configuration(){
-    colorized_echo blue "Memasang konfigurasi custom"
-    # Install .env
-    wget -O /opt/marzban/.env "https://raw.githubusercontent.com/$GITHUB_USERNAME/$REPO_NAME/refs/heads/main/env"
-
-    # Install docker-compose.yml
-    wget -O /opt/marzban/docker-compose.yml "https://raw.githubusercontent.com/$GITHUB_USERNAME/$REPO_NAME/refs/heads/main/docker-compose.yml"
-
-
-    mkdir -p /var/log/nginx
-    touch /var/log/nginx/access.log
-    touch /var/log/nginx/error.log
-
-    mkdir -p /var/www/html
-    echo "<pre>Setup by AutoScript Marvion</pre>" > /var/www/html/index.html
-
-    # Install nginx.conf
-    wget -O /opt/marzban/nginx.conf "https://raw.githubusercontent.com/$GITHUB_USERNAME/$REPO_NAME/refs/heads/main/nginx.conf"
-
-    # Install xray config
-    wget -O /var/lib/marzban/xray_config.json "https://raw.githubusercontent.com/$GITHUB_USERNAME/$REPO_NAME/refs/heads/main/xray_config.json"
-
-    cd /opt/marzban
-    docker compose down && docker compose up -d
-    colorized_echo green "Konfigurasi custom berhasil dipasang"
 }
 
 setup_domain() {
@@ -264,45 +250,68 @@ setup_domain() {
 }
 
 install_cert(){
-    colorized_echo blue "Memasang cert"
+    colorized_echo blue "Memasang certificate untuk domain"
     mkdir -p /var/lib/marzban/certs
     curl https://get.acme.sh | sh -s email=admin@lumine.my.id
     /root/.acme.sh/acme.sh --server letsencrypt --register-account -m admin@lumine.my.id --issue -d $domain --standalone -k ec-256
     ~/.acme.sh/acme.sh --installcert -d $domain --fullchainpath /var/lib/marzban/certs/xray.crt --keypath /var/lib/marzban/certs/xray.key --ecc
-    colorized_echo green "Cert berhasil dipasang"
+    colorized_echo green "Certificate berhasil dipasang"
+}
+
+install_xray(){
+    colorized_echo blue "Memasang Xray"
+    mkdir -p /var/lib/marzban/assets
+    mkdir -p /var/lib/marzban/core
+    wget -O /var/lib/marzban/core/xray.zip "https://github.com/XTLS/Xray-core/releases/download/v24.11.30/Xray-linux-64.zip"
+    cd /var/lib/marzban/core && unzip xray.zip && chmod +x xray
+    rm -f /var/lib/marzban/core/xray.zip
+    colorized_echo green "Xray berhasil dipasang"
+}
+
+install_custom_configuration(){
+    colorized_echo blue "Memasang konfigurasi custom"
+    # Install .env
+    wget -O /opt/marzban/.env "https://raw.githubusercontent.com/$GITHUB_USERNAME/$REPO_NAME/refs/heads/main/env"
+
+    # Install docker-compose.yml
+    wget -O /opt/marzban/docker-compose.yml "https://raw.githubusercontent.com/$GITHUB_USERNAME/$REPO_NAME/refs/heads/main/docker-compose.yml"
+
+    # Install nginx.conf
+    wget -O /opt/marzban/nginx.conf "https://raw.githubusercontent.com/$GITHUB_USERNAME/$REPO_NAME/refs/heads/main/nginx.conf"
+
+    # Install xray config
+    wget -O /var/lib/marzban/xray_config.json "https://raw.githubusercontent.com/$GITHUB_USERNAME/$REPO_NAME/refs/heads/main/xray_config.json"
+
+    mkdir -p /var/log/nginx
+    touch /var/log/nginx/access.log
+    touch /var/log/nginx/error.log
+
+    mkdir -p /var/www/html
+    echo "<pre>Setup by AutoScript Marvion</pre>" > /var/www/html/index.html
+
+    # Install subscription template
+    sudo wget -N -P /var/lib/marzban/templates/subscription/ https://raw.githubusercontent.com/x0sina/marzban-sub/main/index.html
+
+    cd /opt/marzban
+    docker compose down && docker compose up -d
+    colorized_echo green "Konfigurasi custom berhasil dipasang"
 }
 
 main() {
-    check_running_as_root
     colorized_echo cyan "Memulai proses instalasi..."
 
+    check_running_as_root
     timedatectl set-timezone Asia/Jakarta;
-
-    # Setup domain
     setup_domain
-    
-    # Install semua tools yang diperlukan
-    install_tools
-
-    # Install speedtest
+    install_necessary_tools
     install_speedtest
-
-    # Konfigurasi UFW
-    enable_ufw
-    
-    # Install skrip marzban
+    install_vnstat
+    enable_firewall
     install_marzban_script
-    
-    # Install cert
     install_cert
-    
-    # Aktifkan BBR
     install_bbr
-    
-    # Install WARP
     install_warp
-    
-    # Install custom configuration
+    install_xray
     install_custom_configuration
     
     colorized_echo green "Instalasi selesai!"

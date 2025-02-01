@@ -145,55 +145,6 @@
       }
     },
     {
-      "tag": "VLESS-gRPC",
-      "listen": "127.0.0.1",
-      "port": 3001,
-      "protocol": "vless",
-      "settings": {
-        "clients": [],
-        "decryption": "none"
-      },
-      "streamSettings": {
-        "network": "grpc",
-        "security": "none",
-        "grpcSettings": {
-          "serviceName": "vlessgrpc"
-        }
-      }
-    },
-    {
-      "tag": "VMESS-gRPC",
-      "listen": "127.0.0.1",
-      "port": 3002,
-      "protocol": "vmess",
-      "settings": {
-        "clients": []
-      },
-      "streamSettings": {
-        "network": "grpc",
-        "security": "none",
-        "grpcSettings": {
-          "serviceName": "vmessgrpc"
-        }
-      }
-    },
-    {
-      "tag": "TROJAN-gRPC",
-      "listen": "127.0.0.1",
-      "port": 3003,
-      "protocol": "trojan",
-      "settings": {
-        "clients": []
-      },
-      "streamSettings": {
-        "network": "grpc",
-        "security": "none",
-        "grpcSettings": {
-          "serviceName": "trojangrpc"
-        }
-      }
-    },
-    {
       "tag": "SHADOWSOCKS_OUTLINE",
       "listen": "0.0.0.0",
       "port": 4001,
