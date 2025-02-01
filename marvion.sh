@@ -495,6 +495,7 @@ main() {
     clean_up
 
     profile
+    echo ""
     touch /root/log-install.txt
     echo "Untuk data login dashboard Marzban: " | tee -a /root/log-install.txt
     echo "===================================" | tee -a /root/log-install.txt
@@ -502,7 +503,6 @@ main() {
     echo "Username  : ${ADMIN_USERNAME}" | tee -a /root/log-install.txt
     echo "Password  : ${ADMIN_PASSWORD}" | tee -a /root/log-install.txt
     echo "===================================" | tee -a /root/log-install.txt
-
     echo ""
     colorized_echo green "Instalasi selesai!"
     colorized_echo yellow "Silakan gunakan perintah 'marzban' untuk mengelola layanan"
