@@ -49,10 +49,12 @@ get_token() {
         -d "grant_type=password&username=${ADMIN_USERNAME}&password=${ADMIN_PASSWORD}")
 
     if echo "$response" | grep -q "Incorrect username or password"; then
-        colorized_echo red "Error: Username atau password salah. Silakan coba lagi."
         cd /opt/marzban
         docker compose down && docker compose up -d
         sleep 15s
+        profile
+        echo ""
+        colorized_echo red "Error: Username atau password salah. Silakan coba lagi."
         return 1
     else
         echo "$response" > /etc/data/token.json
