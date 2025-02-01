@@ -87,7 +87,10 @@ renew_cert() {
     # Restart layanan
     cd /opt/marzban
     docker compose up -d
-    
+
+    sleep 3
+    profile
+
     colorized_echo green "Sertifikat berhasil diperbarui untuk domain: $domain"
 }
 

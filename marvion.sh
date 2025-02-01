@@ -345,6 +345,12 @@ install_service(){
     wget -O /usr/bin/cekservice "https://raw.githubusercontent.com/$GITHUB_USERNAME/$REPO_NAME/refs/heads/main/service/cekservice.sh"
     chmod +x /usr/bin/cekservice
 
+    wget -O /usr/bin/updategeo "https://raw.githubusercontent.com/$GITHUB_USERNAME/$REPO_NAME/refs/heads/main/service/updategeo.sh"
+    chmod +x /usr/bin/updategeo
+
+    wget -O /usr/bin/menu "https://raw.githubusercontent.com/$GITHUB_USERNAME/$REPO_NAME/refs/heads/main/service/menu.sh"
+    chmod +x /usr/bin/menu
+
     colorized_echo green "Layanan berhasil dipasang"
 }
 
