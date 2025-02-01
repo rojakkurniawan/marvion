@@ -171,6 +171,7 @@ install_vnstat(){
     install_package vnstat
     /etc/init.d/vnstat restart
     install_package libsqlite3-dev
+    install_package build-essential
     wget https://github.com/$GITHUB_USERNAME/$REPO_NAME/raw/refs/heads/main/vnstat-2.6.tar.gz
     tar zxvf vnstat-2.6.tar.gz
     cd vnstat-2.6
