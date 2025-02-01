@@ -170,7 +170,7 @@ install_vnstat(){
     install_package vnstat
     /etc/init.d/vnstat restart
     install_package libsqlite3-dev
-    wget https://github.com/$GITHUB_USERNAME/$REPO_NAME/refs/heads/main/vnstat-2.6.tar.gz
+    wget https://github.com/$GITHUB_USERNAME/$REPO_NAME/raw/refs/heads/main/vnstat-2.6.tar.gz
     tar zxvf vnstat-2.6.tar.gz
     cd vnstat-2.6
     ./configure --prefix=/usr --sysconfdir=/etc && make && make install 
@@ -303,9 +303,9 @@ main() {
     colorized_echo cyan "Memulai proses instalasi..."
 
     check_running_as_root
-    timedatectl set-timezone Asia/Jakarta;
     setup_domain
     install_necessary_tools
+    timedatectl set-timezone Asia/Jakarta;
     install_speedtest
     install_vnstat
     enable_firewall
