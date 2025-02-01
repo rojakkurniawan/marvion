@@ -57,21 +57,6 @@ marzban_version=$(echo "$marzban_info" | jq -r '.version')
 # Usage of the function
 get_marzban_info
 
-versionmarzban=$(grep 'image: gozargah/marzban:' /opt/marzban/docker-compose.yml | awk -F: '{print $3}')
-
-# Debugging
-echo "Debug: versionmarzban = ${versionmarzban}"
-
-if [[ "${versionmarzban}" == "latest" ]]; then
-    versionmarzban="Stable"
-elif [[ "${versionmarzban}" == "dev" ]]; then
-    versionmarzban="Beta" 
-elif [[ -z "${versionmarzban}" ]]; then
-    versionmarzban="Unknown"
-else
-    versionmarzban="${versionmarzban}"
-fi
-
 # Function to get Xray Core version
 function get_xray_core_version() {
     xray_core_info=$(curl -s -X 'GET' \
@@ -91,12 +76,12 @@ echo ""
 echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m${NC}"
 echo -e "\E[42;1;39m            ⇱ Service Information ⇲             \E[0m"
 echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m${NC}"
-echo -e "❇️ Marzban Version     : ${GREEN}${marzban_version}${NC} ${BLUE}${versionmarzban}${NC}"
+echo -e "❇️ Marzban Version     : ${GREEN}${marzban_version}${NC}"
 echo -e "❇️ XrayCore Version    : ${GREEN}${xray_core_version}${NC}"
 echo -e "❇️ Nginx               : $NGINX"
 echo -e "❇️ Firewall            : $UFW"
 echo -e "❇️ Marzban Panel       : $MARZ"
 echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m${NC}"
-echo -e "MARZBAN NGINX PORT 443"
+echo -e "                          MARZBAN NGINX PORT 443"
 echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m${NC}"
 echo ""
