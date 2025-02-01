@@ -245,7 +245,8 @@ setup_domain() {
     install_package dnsutils
 
     clear
-    colorized_echo blue "Silahkan masukkan domain panel"
+    colorized_echo yellow "Silahkan masukkan domain panel"
+    echo ""
     current_ip=$(curl -s https://ipinfo.io/ip)
     if [ -z "$current_ip" ]; then
         colorized_echo red "Tidak dapat menemukan IP publik saat ini."
