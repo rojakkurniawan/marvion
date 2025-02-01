@@ -218,6 +218,7 @@ install_speedtest(){
 setup_domain() {
     colorized_echo blue "Menyiapkan domain"
     check_running_as_root
+    detect_os
     install_package curl
     install_package dnsutils
 
