@@ -456,8 +456,7 @@ configure_dns() {
 
     # Hapus resolv.conf yang lama
     if [ -f /etc/resolv.conf ]; then
-        chattr -i /etc/resolv.conf
-        rm -f /etc/resolv.conf
+        sudo rm -f /etc/resolv.conf
     fi
     # Tulis konfigurasi DNS baru
     cat > /etc/resolv.conf << EOF
