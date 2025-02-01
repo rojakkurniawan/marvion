@@ -57,11 +57,18 @@ marzban_version=$(echo "$marzban_info" | jq -r '.version')
 get_marzban_info "your_domain_here" "your_token_here"
 
 versimarzban=$(grep 'image: gozargah/marzban:' /opt/marzban/docker-compose.yml | awk -F: '{print $3}')
-  # Replace values and specific version
-  case "${versimarzban}" in
-    "latest") versimarzban="Stable";;
-    "dev") versimarzban="Beta";;
-  esac
+# Replace values and specific version
+case "${versimarzban}" in
+  "latest")
+    versimarzban="Stable"
+    ;;
+  "dev") 
+    versimarzban="Beta"
+    ;;
+  *)
+    versimarzban="Unknown"
+    ;;
+esac
 # Function to get Xray Core version
 function get_xray_core_version() {
     xray_core_info=$(curl -s -X 'GET' \
@@ -79,7 +86,7 @@ xray_core_version=$(get_xray_core_version "$domain" "$token")
 
 echo ""
 echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m${NC}"
-echo -e "\E[44;1;39m            ⇱ Service Information ⇲             \E[0m"
+echo -e "\E[42;1;39m            ⇱ Service Information ⇲             \E[0m"
 echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m${NC}"
 echo -e "❇️ Marzban Version     : ${GREEN}${marzban_version}${NC} ${BLUE}${versimarzban}${NC}"
 echo -e "❇️ XrayCore Version    : ${GREEN}${xray_core_version}${NC}"
