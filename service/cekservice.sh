@@ -41,34 +41,35 @@ fi
 
 # Function to fetch system information from Marzban API
 function get_marzban_info() {
-
     local marzban_api="https://${domain}/api/system"
     local marzban_info=$(curl -s -X 'GET' "$marzban_api" -H 'accept: application/json' -H "Authorization: Bearer $token")
 
     if [[ $? -eq 0 ]]; then
-# Parsing Marzban API response
-marzban_version=$(echo "$marzban_info" | jq -r '.version')
+        # Parsing Marzban API response
+        marzban_version=$(echo "$marzban_info" | jq -r '.version')
     else
         echo -e "${ERROR} Failed to fetch Marzban information."
         exit 1
     fi
 }
-# Usage of the function
-get_marzban_info "your_domain_here" "your_token_here"
+
+# Get Marzban info
+get_marzban_info
 
 versimarzban=$(grep 'image: gozargah/marzban:' /opt/marzban/docker-compose.yml | awk -F: '{print $3}')
 # Replace values and specific version
 case "${versimarzban}" in
-  "latest")
-    versimarzban="Stable"
-    ;;
-  "dev") 
-    versimarzban="Beta"
-    ;;
-  *)
-    versimarzban="Unknown"
-    ;;
+    "latest")
+        versimarzban="[Stable]"
+        ;;
+    "dev") 
+        versimarzban="[Beta]"
+        ;;
+    *)
+        versimarzban="[Unknown]"
+        ;;
 esac
+
 # Function to get Xray Core version
 function get_xray_core_version() {
     xray_core_info=$(curl -s -X 'GET' \
@@ -85,15 +86,15 @@ function get_xray_core_version() {
 xray_core_version=$(get_xray_core_version "$domain" "$token")
 
 echo ""
-echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m${NC}"
-echo -e "\E[42;1;39m            ⇱ Service Information ⇲             \E[0m"
-echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m${NC}"
-echo -e "❇️ Marzban Version     : ${GREEN}${marzban_version}${NC} ${BLUE}${versimarzban}${NC}"
-echo -e "❇️ XrayCore Version    : ${GREEN}${xray_core_version}${NC}"
-echo -e "❇️ Nginx               : $NGINX"
-echo -e "❇️ Firewall            : $UFW"
-echo -e "❇️ Marzban Panel       : $MARZ"
-echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m${NC}"
-echo -e "MARZBAN NGINX PORT 443"
-echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m${NC}"
+echo -e "\033[1;36m╔═══════════════════════════════════════════════════════════════════╗\033[0m"
+echo -e "\033[1;36m║\033[0m            \033[1;42m            ⇱ Service Information ⇲             \033[0m \033[1;36m║\033[0m"
+echo -e "\033[1;36m╠═══════════════════════════════════════════════════════════════════╣\033[0m"
+echo -e "\033[1;36m║\033[0m  ❇️ Marzban Version     : ${GREEN}${marzban_version} ${BLUE}${versimarzban}${NC}           \033[1;36m║\033[0m"
+echo -e "\033[1;36m║\033[0m  ❇️ XrayCore Version    : ${GREEN}${xray_core_version}${NC}                    \033[1;36m║\033[0m"
+echo -e "\033[1;36m║\033[0m  ❇️ Nginx               : $NGINX                           \033[1;36m║\033[0m"
+echo -e "\033[1;36m║\033[0m  ❇️ Firewall            : $UFW                            \033[1;36m║\033[0m"
+echo -e "\033[1;36m║\033[0m  ❇️ Marzban Panel       : $MARZ                           \033[1;36m║\033[0m"
+echo -e "\033[1;36m╠═══════════════════════════════════════════════════════════════════╣\033[0m"
+echo -e "\033[1;36m║\033[0m                    MARZBAN NGINX PORT 443                    \033[1;36m║\033[0m"
+echo -e "\033[1;36m╚═══════════════════════════════════════════════════════════════════╝\033[0m"
 echo ""
