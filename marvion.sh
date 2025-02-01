@@ -450,7 +450,9 @@ nameserver 1.1.1.1
 EOF
     
     # Pastikan file tidak bisa diubah
-    chattr +i /etc/resolv.conf
+    if ! chattr +i /etc/resolv.conf 2>/dev/null; then
+        chmod 644 /etc/resolv.conf
+    fi
     
     # Verifikasi konfigurasi
     if [ -f /etc/resolv.conf ] && grep -q "nameserver" /etc/resolv.conf; then
