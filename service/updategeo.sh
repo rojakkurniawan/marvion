@@ -62,7 +62,7 @@ update_geo() {
         
         profile
         echo ""
-        colorized_echo green "Proses update selesai!"
+        colorized_echo green "GeoIP dan GeoSite berhasil diupdate!"
     else
         colorized_echo yellow "Update dibatalkan."
     fi
