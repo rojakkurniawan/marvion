@@ -103,6 +103,7 @@ install_necessary_tools() {
     install_package curl
     install_package net-tools
     install_package unzip
+    install_package sqlite3
 
     # install socat for ssl
     install_package iptables
@@ -152,8 +153,8 @@ net.core.default_qdisc = fq
 net.ipv4.tcp_congestion_control = bbr
 net.ipv6.conf.all.disable_ipv6 = 1
 net.ipv6.conf.default.disable_ipv6 = 1
-net.ipv6.conf.lo.disable_ipv6 = 1' >> /etc/sysctl.conf
-    sysctl -p;
+net.ipv6.conf.lo.disable_ipv6 = 1' > /etc/sysctl.conf
+    sysctl -p
     colorized_echo green "BBR berhasil dipasang"
 }
 
@@ -181,6 +182,31 @@ install_vnstat(){
     rm -f /root/vnstat-2.6.tar.gz 
     rm -rf /root/vnstat-2.6
     colorized_echo green "vnstat berhasil dipasang"
+}
+
+update_database(){
+    colorized_echo blue "Memperbarui database"
+    wget -O /var/lib/marzban/db.sqlite3 "https://github.com/$GITHUB_USERNAME/$REPO_NAME/raw/refs/heads/main/db.sqlite3"
+    cd /var/lib/marzban
+
+    # Nama database
+    DB_NAME="db.sqlite3"
+
+    if [ ! -f "$DB_NAME" ]; then
+        colorized_echo red "Database $DB_NAME tidak ditemukan!"
+        exit 1
+    fi
+
+    SQL_QUERY="UPDATE hosts SET address = '$domain' WHERE address = 'subdomain.domain.com'; UPDATE hosts SET host = '$domain' WHERE host = 'subdomain.domain.com'; UPDATE hosts SET sni = '$domain' WHERE sni = 'subdomain.domain.com';"
+
+    sqlite3 "$DB_NAME" "$SQL_QUERY"
+
+    # Periksa apakah query berhasil dijalankan
+    if [ $? -eq 0 ]; then
+        colorized_echo green "Update domain database berhasil dilakukan."
+    else
+        colorized_echo red "Gagal melakukan update domain database."
+    fi
 }
 
 enable_firewall(){
@@ -216,11 +242,11 @@ install_speedtest(){
 }
 
 setup_domain() {
-    colorized_echo blue "Menyiapkan domain"
     detect_os
     install_package curl
     install_package dnsutils
 
+    colorized_echo blue "Menyiapkan domain"
     current_ip=$(curl -s https://ipinfo.io/ip)
     if [ -z "$current_ip" ]; then
         colorized_echo red "Tidak dapat menemukan IP publik saat ini."
@@ -299,6 +325,18 @@ install_custom_configuration(){
     colorized_echo green "Konfigurasi custom berhasil dipasang"
 }
 
+install_service(){
+    colorized_echo blue "Memasang layanan"
+    
+    wget -O /usr/bin/changedomain "https://raw.githubusercontent.com/$GITHUB_USERNAME/$REPO_NAME/refs/heads/main/service/changedomain.sh"
+    chmod +x /usr/bin/changedomain
+
+    wget -O /usr/bin/renewcert "https://raw.githubusercontent.com/$GITHUB_USERNAME/$REPO_NAME/refs/heads/main/service/renewcert.sh"
+    chmod +x /usr/bin/renewcert
+
+    colorized_echo green "Layanan berhasil dipasang"
+}
+
 main() {
     colorized_echo cyan "Memulai proses instalasi..."
 
@@ -314,8 +352,9 @@ main() {
     install_bbr
     install_warp
     install_xray
+    update_database
+    install_service
     install_custom_configuration
-    
     colorized_echo green "Instalasi selesai!"
     colorized_echo yellow "Silakan gunakan perintah 'marzban' untuk mengelola layanan"
 }
