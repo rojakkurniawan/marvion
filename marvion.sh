@@ -398,14 +398,10 @@ clean_up(){
     fi
 }
 
-
-main() {
-    colorized_echo cyan "Memulai proses instalasi..."
-
-    check_running_as_root
-    
+admin_setup(){
     while true; do
         read -rp "Masukkan username admin: " ADMIN_USERNAME
+        echo "Debug: Panjang username: ${#ADMIN_USERNAME}"
         if [[ -z "$ADMIN_USERNAME" ]]; then
             colorized_echo red "Username tidak boleh kosong!"
             continue
@@ -421,6 +417,8 @@ main() {
 
     while true; do
         read -rp "Masukkan password admin: " ADMIN_PASSWORD
+        echo "Debug: Panjang password: ${#ADMIN_PASSWORD}"
+        echo "Debug: Password yang dimasukkan: $ADMIN_PASSWORD"
         if [[ -z "$ADMIN_PASSWORD" ]]; then
             colorized_echo red "Password tidak boleh kosong!"
             continue
@@ -439,7 +437,13 @@ main() {
         fi
         break
     done
+}
 
+main() {
+    colorized_echo cyan "Memulai proses instalasi..."
+
+    check_running_as_root
+    admin_setup
     setup_domain
     install_necessary_tools
     timedatectl set-timezone Asia/Jakarta;
