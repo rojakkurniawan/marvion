@@ -53,15 +53,20 @@ marzban_version=$(echo "$marzban_info" | jq -r '.version')
         exit 1
     fi
 }
-# Usage of the function
-get_marzban_info "your_domain_here" "your_token_here"
 
-versionmarzban=$(grep 'image: gozargah/marzban:' /opt/marzban/docker-compose.yml | awk -F: '{print $3}')
+# Usage of the function
+get_marzban_info
+
+versionmarzban=$(grep 'image: gozargah/marzban:' $(pwd)/docker-compose.yml | awk -F: '{print $3}')
+
+# Debugging
+echo "Debug: versionmarzban = ${versionmarzban}"
+
 if [[ "${versionmarzban}" == "latest" ]]; then
     versionmarzban="Stable"
 elif [[ "${versionmarzban}" == "dev" ]]; then
     versionmarzban="Beta" 
-elif [[ "${versionmarzban}" == "" ]]; then
+elif [[ -z "${versionmarzban}" ]]; then
     versionmarzban="Unknown"
 else
     versionmarzban="${versionmarzban}"
