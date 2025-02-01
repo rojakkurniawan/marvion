@@ -55,7 +55,7 @@ marzban_version=$(echo "$marzban_info" | jq -r '.version')
 }
 
 # Usage of the function
-get_marzban_info
+get_marzban_info "$domain" "$token"
 
 # Function to get Xray Core version
 function get_xray_core_version() {

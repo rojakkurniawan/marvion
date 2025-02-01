@@ -246,6 +246,7 @@ install_speedtest(){
 }
 
 setup_domain() {
+    clear
     detect_os
     install_package curl
     install_package dnsutils
@@ -458,13 +459,12 @@ main() {
     install_custom_configuration
     sleep 15s
     get_token
-    profile
     
     clear
     clean_up
 
+    profile
     touch /root/log-install.txt
-
     echo "Untuk data login dashboard Marzban: " | tee -a /root/log-install.txt
     echo "-=================================-" | tee -a /root/log-install.txt
     echo "URL HTTPS : https://${domain}/dashboard" | tee -a /root/log-install.txt
