@@ -31,7 +31,7 @@ update_geo() {
     check_running_as_root
     
     # Mendapatkan versi terbaru
-    latest=$(curl -s https://api.github.com/repos/rfxcll/v2ray-rules-dat/releases/latest | grep tag_name | cut -d '"' -f 4)
+    latest=$(curl -s https://api.github.com/repos/malikshi/v2ray-rules-dat/releases/latest | grep tag_name | cut -d '"' -f 4)
     
     if [ -z "$latest" ]; then
         colorized_echo red "Gagal mendapatkan versi terbaru."
@@ -47,14 +47,14 @@ update_geo() {
         cd /var/lib/marzban/assets || exit
         
         # Download GeoIP
-        if wget -O geoip.dat "https://github.com/rfxcll/v2ray-rules-dat/releases/download/${latest}/GeoIP.dat"; then
+        if wget -O geoip.dat "https://github.com/malikshi/v2ray-rules-dat/releases/download/${latest}/GeoIP.dat"; then
             colorized_echo green "GeoIP berhasil diupdate!"
         else
             colorized_echo red "Gagal mengupdate GeoIP"
         fi
         
         # Download GeoSite
-        if wget -O geosite.dat "https://github.com/rfxcll/v2ray-rules-dat/releases/download/${latest}/GeoSite.dat"; then
+        if wget -O geosite.dat "https://github.com/malikshi/v2ray-rules-dat/releases/download/${latest}/GeoSite.dat"; then
             colorized_echo green "GeoSite berhasil diupdate!"
         else
             colorized_echo red "Gagal mengupdate GeoSite"
