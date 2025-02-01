@@ -39,19 +39,12 @@ update_geo() {
     fi
     
     colorized_echo blue "Versi terbaru yang tersedia: ${latest}"
-    read -rp "Apakah Anda ingin melanjutkan update GeoIP dan GeoSite? (y/n): " answer
+    read -rp "Apakah Anda ingin melanjutkan update GeoSite dan GeoIP? (y/n): " answer
     
     if [[ "$answer" =~ ^[Yy]$ ]]; then
         colorized_echo blue "Memulai proses update..."
         
         cd /var/lib/marzban/assets || exit
-        
-        # Download GeoIP
-        if wget -O geoip.dat "https://github.com/malikshi/v2ray-rules-dat/releases/download/${latest}/GeoIP.dat"; then
-            colorized_echo green "GeoIP berhasil diupdate!"
-        else
-            colorized_echo red "Gagal mengupdate GeoIP"
-        fi
         
         # Download GeoSite
         if wget -O geosite.dat "https://github.com/malikshi/v2ray-rules-dat/releases/download/${latest}/GeoSite.dat"; then
@@ -59,10 +52,17 @@ update_geo() {
         else
             colorized_echo red "Gagal mengupdate GeoSite"
         fi
+
+        # Download GeoIP
+        if wget -O geoip.dat "https://github.com/malikshi/v2ray-rules-dat/releases/download/${latest}/GeoIP.dat"; then
+            colorized_echo green "GeoIP berhasil diupdate!"
+        else
+            colorized_echo red "Gagal mengupdate GeoIP"
+        fi
         
         profile
         echo ""
-        colorized_echo green "GeoIP dan GeoSite berhasil diupdate!"
+        colorized_echo green "GeoSite dan GeoIP berhasil diupdate!"
     else
         colorized_echo yellow "Update dibatalkan."
     fi
