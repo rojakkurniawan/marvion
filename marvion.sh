@@ -151,11 +151,8 @@ net.core.rmem_max = 4000000
 net.ipv4.tcp_mtu_probing = 1
 net.ipv4.ip_forward = 1
 net.core.default_qdisc = fq
-net.ipv4.tcp_congestion_control = bbr
-net.ipv6.conf.all.disable_ipv6 = 1
-net.ipv6.conf.default.disable_ipv6 = 1
-net.ipv6.conf.lo.disable_ipv6 = 1' >> /etc/sysctl.conf
-sysctl -p;
+net.ipv4.tcp_congestion_control = bbr' >> /etc/sysctl.conf
+    sysctl -p;
     colorized_echo green "BBR berhasil dipasang"
 }
 
@@ -437,6 +434,32 @@ admin_setup(){
     done
 }
 
+configure_dns() {
+    colorized_echo blue "Mengkonfigurasi DNS resolver"
+    
+    # Backup resolv.conf yang lama
+    if [ -f /etc/resolv.conf ]; then
+        cp /etc/resolv.conf /etc/resolv.conf.backup
+    fi
+    
+    # Tulis konfigurasi DNS baru
+    cat > /etc/resolv.conf << EOF
+nameserver 8.8.8.8
+nameserver 8.8.4.4
+nameserver 1.1.1.1
+EOF
+    
+    # Pastikan file tidak bisa diubah
+    chattr +i /etc/resolv.conf
+    
+    # Verifikasi konfigurasi
+    if [ -f /etc/resolv.conf ] && grep -q "nameserver" /etc/resolv.conf; then
+        colorized_echo green "Konfigurasi DNS berhasil"
+    else
+        colorized_echo red "Gagal mengkonfigurasi DNS"
+    fi
+}
+
 main() {
     colorized_echo cyan "Memulai proses instalasi..."
 
@@ -450,6 +473,7 @@ main() {
     enable_firewall
     install_marzban_script
     install_cert
+    configure_dns
     install_bbr
     install_warp
     install_xray
@@ -466,11 +490,11 @@ main() {
     profile
     touch /root/log-install.txt
     echo "Untuk data login dashboard Marzban: " | tee -a /root/log-install.txt
-    echo "-=================================-" | tee -a /root/log-install.txt
+    echo "===================================" | tee -a /root/log-install.txt
     echo "URL HTTPS : https://${domain}/dashboard" | tee -a /root/log-install.txt
     echo "Username  : ${ADMIN_USERNAME}" | tee -a /root/log-install.txt
     echo "Password  : ${ADMIN_PASSWORD}" | tee -a /root/log-install.txt
-    echo "-=================================-" | tee -a /root/log-install.txt
+    echo "===================================" | tee -a /root/log-install.txt
 
     colorized_echo green "Instalasi selesai!"
     colorized_echo yellow "Silakan gunakan perintah 'marzban' untuk mengelola layanan"
