@@ -31,10 +31,6 @@ check_running_as_root() {
 }
 
 setup_domain() {
-    detect_os
-    install_package curl
-    install_package dnsutils
-
     colorized_echo blue "Menyiapkan domain"
     current_ip=$(curl -s https://ipinfo.io/ip)
     if [ -z "$current_ip" ]; then
@@ -72,10 +68,6 @@ renew_cert() {
     # Pastikan berjalan sebagai root
     check_running_as_root
     
-    # Stop layanan
-    cd /opt/marzban
-    docker compose down
-
     # Setup domain baru
     setup_domain
     
@@ -85,6 +77,10 @@ renew_cert() {
     # Buat direktori jika belum ada
     mkdir -p /var/lib/marzban/certs
     
+    # Stop layanan
+    cd /opt/marzban
+    docker compose down
+
     # Perbarui sertifikat
     ~/.acme.sh/acme.sh --server letsencrypt --register-account -m admin@lumine.my.id --issue -d $domain --standalone -k ec-256 --force
     ~/.acme.sh/acme.sh --installcert -d $domain --fullchainpath /var/lib/marzban/certs/xray.crt --keypath /var/lib/marzban/certs/xray.key --ecc --force

@@ -104,7 +104,8 @@ install_necessary_tools() {
     install_package net-tools
     install_package unzip
     install_package sqlite3
-
+    install_package python3-bcrypt
+    
     # install socat for ssl
     install_package iptables
     install_package curl
@@ -335,13 +336,50 @@ install_service(){
     wget -O /usr/bin/renewcert "https://raw.githubusercontent.com/$GITHUB_USERNAME/$REPO_NAME/refs/heads/main/service/renewcert.sh"
     chmod +x /usr/bin/renewcert
 
+    echo -e 'profile' >> /root/.profile
+    wget -O /usr/bin/profile "https://raw.githubusercontent.com/$GITHUB_USERNAME/$REPO_NAME/refs/heads/main/service/profile.sh"
+    chmod +x /usr/bin/profile
+
+    wget -O /usr/bin/cekservice "https://raw.githubusercontent.com/$GITHUB_USERNAME/$REPO_NAME/refs/heads/main/service/cekservice.sh"
+    chmod +x /usr/bin/cekservice
+
     colorized_echo green "Layanan berhasil dipasang"
+}
+
+add_admin(){
+    colorized_echo blue "Menambahkan admin"
+    cd /var/lib/marzban
+
+    DB_NAME="db.sqlite3"
+
+    if [ ! -f "$DB_NAME" ]; then
+        colorized_echo red "Database $DB_NAME tidak ditemukan!"
+        exit 1
+    fi
+    
+    HASHED_PASSWORD=$(python3 -c "import bcrypt; print(bcrypt.hashpw('${ADMIN_PASSWORD}'.encode(), bcrypt.gensalt(rounds=12)).decode())")
+
+    SQL_QUERY_ADMIN="INSERT INTO admins (username, hashed_password, is_sudo, created_at) 
+                        VALUES ('$ADMIN_USERNAME', '$HASHED_PASSWORD', 1, datetime('now'));"
+
+    sqlite3 "$DB_NAME" "$SQL_QUERY_ADMIN"
+    colorized_echo green "Admin berhasil ditambahkan"
+}
+
+get_token(){
+    curl -X 'POST' \
+  "https://${domain}/api/admin/token" \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/x-www-form-urlencoded' \
+  -d "grant_type=password&username=${ADMIN_USERNAME}&password=${ADMIN_PASSWORD}" > /etc/data/token.json
 }
 
 main() {
     colorized_echo cyan "Memulai proses instalasi..."
 
     check_running_as_root
+    read -rp "Masukkan username admin: " ADMIN_USERNAME
+    read -rp "Masukkan password admin: " ADMIN_PASSWORD
     setup_domain
     install_necessary_tools
     timedatectl set-timezone Asia/Jakarta;
@@ -354,10 +392,49 @@ main() {
     install_warp
     install_xray
     update_database
+    add_admin
     install_service
     install_custom_configuration
+    sleep 15s
+    get_token
+    profile
+    
+    clear
+    if command -v apt >/dev/null 2>&1; then
+        apt clean
+        apt autoremove -y
+    elif command -v dnf >/dev/null 2>&1; then
+        dnf clean all
+        dnf autoremove -y
+    elif command -v yum >/dev/null 2>&1; then
+        yum clean all
+        yum autoremove -y
+    elif command -v pacman >/dev/null 2>&1; then
+        pacman -Scc --noconfirm
+        pacman -Rns $(pacman -Qtdq) --noconfirm
+    fi
+
+    touch /root/log-install.txt
+
+    echo "Untuk data login dashboard Marzban: " | tee -a /root/log-install.txt
+    echo "-=================================-" | tee -a /root/log-install.txt
+    echo "URL HTTPS : https://${domain}/dashboard" | tee -a /root/log-install.txt
+    echo "Username  : ${ADMIN_USERNAME}" | tee -a /root/log-install.txt
+    echo "Password  : ${ADMIN_PASSWORD}" | tee -a /root/log-install.txt
+    echo "-=================================-" | tee -a /root/log-install.txt
+
     colorized_echo green "Instalasi selesai!"
     colorized_echo yellow "Silakan gunakan perintah 'marzban' untuk mengelola layanan"
+    rm /root/marvion.sh
+
+    read -rp $'\e[1;31m[WARNING]\e[0m Apakah Ingin Reboot [Default y] (y/n)? ' answer
+    answer=${answer:-y}
+
+    if [[ "$answer" == "${answer#[Yy]}" ]]; then
+        exit 0
+    else
+        cat /dev/null > ~/.bash_history && history -c && sudo reboot
+    fi
 }
 
 # Jalankan fungsi main
