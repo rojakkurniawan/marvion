@@ -450,10 +450,9 @@ configure_dns() {
 
     # Hapus resolv.conf yang lama
     if [ -f /etc/resolv.conf ]; then
-        chmod 666 /etc/resolv.conf
+        chattr -i /etc/resolv.conf
         rm -f /etc/resolv.conf
     fi
-    
     # Tulis konfigurasi DNS baru
     cat > /etc/resolv.conf << EOF
 nameserver 1.1.1.1
