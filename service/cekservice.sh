@@ -57,7 +57,7 @@ marzban_version=$(echo "$marzban_info" | jq -r '.version')
 # Usage of the function
 get_marzban_info
 
-versionmarzban=$(grep 'image: gozargah/marzban:' $(pwd)/docker-compose.yml | awk -F: '{print $3}')
+versionmarzban=$(grep 'image: gozargah/marzban:' /opt/marzban/docker-compose.yml | awk -F: '{print $3}')
 
 # Debugging
 echo "Debug: versionmarzban = ${versionmarzban}"
