@@ -26,11 +26,13 @@ if [[ $(netstat -ntlp | grep -i nginx | grep -i 0.0.0.0:443 | awk '{print $4}' |
 else
     NGINX="${RED}Not Okay${NC}";
 fi
-if [[ $(netstat -ntlp | grep -i python | grep -i "127.0.0.1:8000" | awk '{print $4}' | cut -d: -f2 | xargs | sed -e 's/ /, /g') == "80" ]]; then
+
+if [[ $(netstat -ntlp | grep -i python | grep -i "127.0.0.1:8000" | awk '{print $4}' | cut -d: -f2 | xargs | sed -e 's/ /, /g') == "8000" ]]; then
     MARZ="${GREEN}Okay${NC}";
 else
     MARZ="${RED}Not Okay${NC}";
 fi
+
 if [[ $(systemctl status ufw | grep -w Active | awk '{print $2}' | sed 's/(//g' | sed 's/)//g' | sed 's/ //g') == 'active' ]]; then
     UFW="${GREEN}Okay${NC}";
 else

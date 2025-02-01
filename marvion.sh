@@ -221,7 +221,9 @@ enable_firewall(){
     sudo ufw allow 4001/tcp
     sudo ufw allow 4001/udp
     yes | sudo ufw enable
+    sudo systemctl restart ufw
     colorized_echo green "Firewall berhasil diaktifkan"
+
 }
 
 install_speedtest(){
