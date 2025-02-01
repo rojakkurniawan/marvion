@@ -154,8 +154,8 @@ net.core.default_qdisc = fq
 net.ipv4.tcp_congestion_control = bbr
 net.ipv6.conf.all.disable_ipv6 = 1
 net.ipv6.conf.default.disable_ipv6 = 1
-net.ipv6.conf.lo.disable_ipv6 = 1' > /etc/sysctl.conf
-    sysctl -p
+net.ipv6.conf.lo.disable_ipv6 = 1' >> /etc/sysctl.conf
+sysctl -p;
     colorized_echo green "BBR berhasil dipasang"
 }
 
@@ -246,11 +246,11 @@ install_speedtest(){
 }
 
 setup_domain() {
-    clear
     detect_os
     install_package curl
     install_package dnsutils
 
+    clear
     colorized_echo blue "Menyiapkan domain"
     current_ip=$(curl -s https://ipinfo.io/ip)
     if [ -z "$current_ip" ]; then
