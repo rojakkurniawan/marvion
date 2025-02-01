@@ -450,6 +450,7 @@ configure_dns() {
 
     # Hapus resolv.conf yang lama
     if [ -f /etc/resolv.conf ]; then
+        chmod 666 /etc/resolv.conf
         rm -f /etc/resolv.conf
     fi
     
@@ -460,10 +461,6 @@ nameserver 1.0.0.1
 nameserver 8.8.8.8
 EOF
     
-    # Pastikan file tidak bisa diubah
-    if ! chattr +i /etc/resolv.conf 2>/dev/null; then
-        chmod 644 /etc/resolv.conf
-    fi
     
     # Verifikasi konfigurasi
     if [ -f /etc/resolv.conf ] && grep -q "nameserver" /etc/resolv.conf; then
